@@ -1,0 +1,31 @@
+{% extends 'base.html'%} {% block content%}
+<div class="container">
+  <h1>Welcome: {{user.username}}</h1>
+  <h1>Business List</h1>
+
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Owner</th>
+        <th>Business Name</th>
+        <th>Address</th>
+        <th>Phone</th>
+        <th>Date Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for b in buss %}
+      <tr>
+        <td>{{ b.owner.username }}</td>
+        <!-- Owner username -->
+        <td>{{ b.name }}</td>
+        <td>{{ b.address }}</td>
+        <td>{{ b.phone }}</td>
+        <td>{{ b.date_created }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock content%}

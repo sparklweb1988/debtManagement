@@ -1,0 +1,46 @@
+{% extends 'base.html'%} {% block content %}
+<div class="container">
+    <h1>Update Customer {{customers.name }}</h1>
+    <form method="POST" action="{% url 'customer_update' customers.id %}">
+        {% csrf_token %}
+
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" value='{{customers.name}}' required maxlength="100" />
+        </div>
+
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value='{{customers.email}}' required maxlength="100" />
+        </div>
+
+        <div>
+            <label for="phone">Phone:</label>
+            <input type="text" id="phone" name="phone" value='{{customers.phone}}' required maxlength="15" />
+        </div>
+
+        <div>
+            <label for="address">Address:</label>
+            <input type="text" id="address" name="address" value='{{customers.address}}' required maxlength="100" />
+        </div>
+
+        <div>
+            <label for="sex">Gender:</label>
+            <select id="sex" name="sex" value='{{customers.sex}}'>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select>
+        </div>
+
+        <div>
+            <button type="submit">Update</button>
+            <br />
+            <br />
+            <td>
+                <a href="{% url 'customer_list'%}" class="btn btn-blue">Cancel</a>
+            </td>
+        </div>
+    </form>
+</div>
+
+{% endblock content %}

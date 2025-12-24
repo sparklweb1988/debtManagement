@@ -1,0 +1,59 @@
+{% extends 'base.html'%} {% block content %}
+<div class="container">
+    <h1>Add Customer</h1>
+    <form method="POST" action="{% url 'payment_form' %}">
+        {% csrf_token %}
+
+        <div>
+            <label for="customer">Customer:</label>
+            <select name="customer" id="customer" required>
+                {% for customer in customers %}
+                <option value="">Select Customer</option>
+                <option value="{{ customer.id }}">{{ customer.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="amount_paid">Amount Paid:</label>
+            <input type="number" name="amount_paid" id="amount_paid" step="0.01" required />
+        </div>
+
+        <div>
+            <label for="payment_method">Payment Method:</label>
+            <select name="payment_method" id="payment_method" required>
+                <option value="cash">Cash</option>
+                <option value="transfer">Transfer</option>
+                <option value="debit card">Debit Card</option>
+            </select>
+        </div>
+
+
+
+
+        <div>
+            <label for="balance">Balance:</label>
+            <input type="number" name="balance" id="balance" step="0.01" />
+        </div>
+
+        <div>
+            <label for="status">Status:</label>
+            <select name="status" id="status" required>
+                <option value="owing" selected>Owing</option>
+                <option value="paid">Paid</option>
+                <option value="part">Part</option>
+            </select>
+        </div>
+
+        <div>
+            <button type="submit">Add</button>
+            <br />
+            <br />
+            <td>
+                <a href="{% url 'payment_list'%}" class="btn btn-blue">Cancel</a>
+            </td>
+        </div>
+    </form>
+</div>
+
+{% endblock content %}

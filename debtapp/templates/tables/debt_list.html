@@ -1,0 +1,39 @@
+{% extends 'base.html'%} {% block content%}
+<div class="container">
+  <h1>Welcome: {{user.username}}</h1>
+  <h1>Debtor's List</h1>
+  <td>
+    <a href="{% url 'debt_form'%}" class="btn btn-blue">Add Debt</a>
+  </td>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Customer Name</th>
+        <th>Amount Collected</th>
+        <th>Reason</th>
+        <th>Date Collected</th>
+        <!-- <th>Status</th> -->
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in debts %}
+      <tr>
+        <td>{{ d.customer.name}}</td>
+        <!-- Owner username -->
+        <td>{{ d.amount }}</td>
+        <td>{{ d.category }}</td>
+        <td>{{ d.date_collected }}</td>
+        <!-- <td>{{ d.status }}</td> -->
+        <td>
+          <!-- Button Links with different styles -->
+          <a href="{% url 'debt_update' d.id %}" class="btn btn-blue">Edit</a>
+          <a href="{% url 'debt_delete' d.id %}" class="btn btn-red">Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock content%}

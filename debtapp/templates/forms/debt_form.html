@@ -1,0 +1,43 @@
+{% extends 'base.html'%} {% block content %}
+<div class="container">
+    <h1>Add Debtor</h1>
+    <form method="POST" action="{% url 'debt_form' %}">
+        {% csrf_token %}
+        <!-- CSRF Token for security -->
+
+        <!-- Customer Field -->
+        <div>
+            <label for="customer">Customer</label>
+            <select name="customer" id="customer" required>
+                <!-- Populate with customers from the database -->
+                {% for customer in customers %}
+                <option value="{{ customer.id }}" {% if customer.id == debt.customer.id %}selected{% endif %}>
+                    {{ customer.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Amount Field -->
+        <div>
+            <label for="amount">Amount</label>
+            <input type="number" step="0.01" name="amount" id="amount" required placeholder="Enter amount" />
+        </div>
+
+        <!-- Category Field -->
+        <div>
+            <label for="category">Category</label>
+            <input type="text" name="category" id="category" required placeholder="Enter category" />
+        </div>
+
+        <div>
+            <button type="submit">Add</button>
+            <br><br>
+            <td>
+                <a href="{% url 'debt_list'%}" class="btn btn-blue">Cancel</a>
+            </td>
+        </div>
+    </form>
+</div>
+
+{% endblock content %}
