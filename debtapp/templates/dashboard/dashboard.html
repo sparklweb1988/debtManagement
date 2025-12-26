@@ -1,6 +1,7 @@
 {% extends 'base.html'%} {% block content %}
 <div class="container">
   <h1>Welcome: {{user.username}} to your Dashboard</h1>
+  <h1>Total Profit (&#8358; {{profit}})</h1>
   <div class="card-container">
     <div class="card">
       <h3>Total Debtors</h3>
@@ -8,11 +9,11 @@
     </div>
     <div class="card">
       <h3>Total Income</h3>
-      <p>0</p>
+      <p>&#8358; {{total_income}}</p>
     </div>
     <div class="card">
       <h3>Total Expenditure</h3>
-      <p>0</p>
+      <p>&#8358; {{total_expenditure}}</p>
     </div>
   </div>
 

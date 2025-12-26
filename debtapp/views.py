@@ -1,8 +1,10 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import authenticate, logout, login
 from django.contrib import messages
-from debtapp.models import Business, Customer, Debt, Payment
+from debtapp.models import Business, Customer, Debt, Expenditure, Income, Payment
 from django.contrib.auth.models import User
+from django.utils import timezone
+from django.db.models import Sum
 
 # Create your views here.
 
@@ -45,9 +47,38 @@ def dashboard_view(request):
     
     debtors = Debt.objects.all()
     total_debtors = debtors.count()
+    incomes = Income.objects.all()
+    total_income =incomes.count() 
+    expenditures = Expenditure.objects.all()
+    total_expenditure = expenditures.count()
+    
+    
+    today = timezone.now().date()
+
+    start_of_month = today.replace(day=1)
+
+    total_income = Income.objects.filter(
+        user=request.user,
+        date__gte=start_of_month,
+        date__lte=today
+    ).aggregate(total=Sum("amount"))["total"] or 0
+
+    total_expenditure = Expenditure.objects.filter(
+        user=request.user,
+        date__gte=start_of_month,
+        date__lte=today
+    ).aggregate(total=Sum("amount"))["total"] or 0
+
+    profit = total_income - total_expenditure
+
+    
+    
     context ={
         'total_debtors':total_debtors,
         'debtors':debtors,
+        'total_income':total_income,
+        'total_expenditure':total_expenditure,
+        'profit':profit,
         
     }
     return render(request, 'dashboard/dashboard.html',context)
@@ -279,6 +310,77 @@ def payment_delete(request, id):
     payment.delete()
     return redirect('payment_list')
 #  LOGOUT VIEW
+
+
+
+
+#  INCOME
+
+
+def income_view(request):
+    today = timezone.now()
+    month = today.month
+    year = today.year
+
+    incomes = Income.objects.filter(
+        user=request.user,
+        date__month=month,
+        date__year=year
+    )
+
+    total_income = sum(i.amount for i in incomes)
+
+    if request.method == "POST":
+        amount = request.POST.get("amount")
+        description = request.POST.get("description")
+
+        Income.objects.create(
+            user=request.user,
+            amount=amount,
+            description=description
+        )
+        return redirect("income")
+
+    return render(request, "tables/income.html", {
+        "incomes": incomes,
+        "total_income": total_income,
+    })
+
+
+
+# EXPENDITURE
+
+def expenditure_view(request):
+    today = timezone.now()
+    month = today.month
+    year = today.year
+
+    expenditures = Expenditure.objects.filter(
+        user=request.user,
+        date__month=month,
+        date__year=year
+    )
+
+    total_expenditure = sum(e.amount for e in expenditures)
+
+    if request.method == "POST":
+        amount = request.POST.get("amount")
+        description = request.POST.get("description")
+
+        Expenditure.objects.create(
+            user=request.user,
+            amount=amount,
+            description=description
+        )
+        return redirect("expenditure")
+
+    return render(request, "tables/expenditure.html", {
+        "expenditures": expenditures,
+        "total_expenditure": total_expenditure,
+    })
+
+
+
 
 def logout_view(request):
     logout(request)

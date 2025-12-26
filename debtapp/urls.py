@@ -37,7 +37,11 @@ urlpatterns = [
    # COMPLETE BUTTON URL
 
    
+   # TRANSACTIONS
    
+   path("income/", views.income_view, name="income"),
+   path("expenditure/", views.expenditure_view, name="expenditure"),
+
  
    
    #  DELETE URLS

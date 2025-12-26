@@ -1,0 +1,48 @@
+{% extends 'base.html'%} {% block content%}
+
+<div class="container">
+  <p><strong>Total Expenditure:</strong> &#8358; {{ total_expenditure }}</p>
+
+  <form method="post">
+    <h2>Add Expenditure</h2>
+    {% csrf_token %}
+    <input
+      type="number"
+      step="0.01"
+      name="amount"
+      placeholder="Amount"
+      required
+    />
+    <br />
+    <br />
+    <input type="text" name="description" placeholder="Description" />
+    <br /><br />
+    <button type="submit">Add Expenditure</button>
+  </form>
+  <h1>Expenditure List</h1>
+  <table class="table table-bordered">
+    <tr>
+      <th>Date</th>
+      <th>Description</th>
+      <th>Amount</th>
+      <th>Actions</th>
+    </tr>
+    {% for expense in expenditures %}
+    <tr>
+      <td>{{ expense.date }}</td>
+      <td>{{ expense.description }}</td>
+      <td>&#8358; {{ expense.amount }}</td>
+      <td>
+        <!-- Button Links with different styles -->
+        <a href="" class="btn btn-blue">Edit</a>
+        <a href="" class="btn btn-red">Delete</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="3">No expenditure records this month</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock content%}

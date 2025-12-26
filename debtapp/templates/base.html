@@ -13,12 +13,22 @@
     <nav>
       <a href="" class="logo">LOGO</a>
       <ul>
-        {% if user.is_authenticated%}
+        {% if user.is_superuser%}
         <li><a href="{% url 'dashboard'%}">Dashboard</a></li>
         <li><a href="{% url 'bussiness_list'%}">Business</a></li>
         <li><a href="{% url 'customer_list'%}">Customer</a></li>
         <li><a href="{% url 'debt_list'%}">Debt</a></li>
         <li><a href="{% url 'payment_list'%}">Payments</a></li>
+        <li><a href="{% url 'income'%}">Income</a></li>
+        <li><a href="{% url 'expenditure'%}">Expenditure</a></li>
+        <li><a href="{% url 'logout'%}">Logout</a></li>
+        {% elif user.is_authenticated%}
+        <li><a href="{% url 'dashboard'%}">Dashboard</a></li>
+        <li><a href="{% url 'customer_list'%}">Customer</a></li>
+        <li><a href="{% url 'debt_list'%}">Debt</a></li>
+        <li><a href="{% url 'payment_list'%}">Payments</a></li>
+        <li><a href="{% url 'income'%}">Income</a></li>
+        <li><a href="{% url 'expenditure'%}">Expenditure</a></li>
         <li><a href="{% url 'logout'%}">Logout</a></li>
         {% else %}
         <li><a href="{% url 'home'%}">Home</a></li>
