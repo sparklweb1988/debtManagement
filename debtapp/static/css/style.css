@@ -4,11 +4,11 @@ nav {
     align-items: center;
     justify-content: space-between;
     padding: 10px 10%;
-    /* position: fixed;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 999; */
+    z-index: 999;
     height: 50px;
     box-shadow: 4px 6px 12px rgba(0, 0, 0, 0.2)
     
@@ -44,11 +44,13 @@ nav ul li a:hover {
     color: green;
 }
 
-
+.str{
+    text-align: center;
+}
 
 
 .container{
-    width: 80%;
+    width: 100%;
     margin: 70px auto;
 }
 
@@ -106,7 +108,22 @@ form button:hover {
 
 
 
+.inc{
+    color: #218838;
+}
 
+.exp{
+    color: #c82333;
+}
+
+.prof{
+    border: none;
+    border-radius: 8px;
+    background: navy;
+    color: white;
+    padding: 8px 10px;
+    text-align: center;
+}
 
 
 
@@ -219,12 +236,12 @@ th {
 
 /* Styling the buttons */
 .btn {
-    padding: 10px 20px;
+    padding: 6px 10px;
     text-decoration: none;
     color: white;
     border-radius: 5px;
-    margin-right: 10px;
-    font-size: 14px;
+    margin-right: 6px;
+    font-size: 12px;
     display: inline-block;
 }
 
@@ -292,4 +309,138 @@ canvas {
     /* Set a fixed height for the charts */
     max-height: 250px;
     /* Optional: make sure the height doesn't exceed 250px */
+}
+
+
+
+
+/* CSS for the Table (Desktop) */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 12px 15px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: bold;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid #ddd;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    margin-bottom: 16px;
+    padding: 16px;
+    max-width: 100%;
+  
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+    padding: 16px;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.card-text {
+    margin-bottom: 8px;
+}
+
+.card-text strong {
+    font-weight: bold;
+}
+
+.card .btn {
+    margin-right: 8px;
+}
+
+.card .btn-blue {
+    background-color: #007bff;
+    color: white;
+}
+
+.card .btn-blue:hover {
+    background-color: #0056b3;
+}
+
+.card .btn-red {
+    background-color: #dc3545;
+    color: white;
+}
+
+.card .btn-red:hover {
+    background-color: #c82333;
+}
+
+@media (max-width: 768px) {
+    .table {
+        display: none;
+
+    }
+
+    .card {
+        max-width: 90%;
+       
+        margin: 0 auto;
+    
+    }
+
+    .card-body {
+        padding: 12px;
+
+    }
+
+    .card-title {
+        font-size: 1rem;
+     
+    }
+
+    .card-text {
+        font-size: 0.9rem;
+      
+    }
+}
+
+
+@media (min-width: 768px) {
+    .d-none.d-lg-block {
+        display: block;
+     
+    }
+
+    .d-block.d-lg-none {
+        display: none;
+        
+    }
+
+   
+    .table {
+        max-width: 100%;
+        
+    }
 }

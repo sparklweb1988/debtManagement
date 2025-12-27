@@ -1,8 +1,9 @@
 {% extends 'base.html'%} {% block content%}
 
 <div class="container">
-  <p><strong>Total Income:</strong> &#8358;{{ total_income }}</p>
+  <p class="str"><strong>Total Income:</strong> &#8358;{{ total_income }}</p>
 
+  <!-- Form to Add Income -->
   <form method="post">
     <h2>Add Income</h2>
     {% csrf_token %}
@@ -20,29 +21,64 @@
   </form>
 
   <h1>Income List</h1>
-  <table class="table table-bordered">
-    <tr>
-      <th>Date</th>
-      <th>Description</th>
-      <th>Amount</th>
-      <th>Actions</th>
-    </tr>
-    {% for income in incomes %}
-    <tr>
-      <td>{{ income.date }}</td>
-      <td>{{ income.description }}</td>
-      <td>&#8358; {{ income.amount }}</td>
-      <td>
-        <!-- Button Links with different styles -->
-        <a href="" class="btn btn-blue">Edit</a>
-        <a href="" class="btn btn-red">Delete</a>
-      </td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="3">No income records this month</td>
-    </tr>
-    {% endfor %}
-  </table>
+
+  <!-- Table for Desktop View -->
+  <div class="d-none d-lg-block">
+    <table class="table table-bordered">
+      <tr>
+        <th>Date</th>
+        <th>Description</th>
+        <th>Amount</th>
+        <th>Actions</th>
+      </tr>
+      {% for income in incomes %}
+      <tr>
+        <td>{{ income.date }}</td>
+        <td>{{ income.description }}</td>
+        <td>&#8358; {{ income.amount }}</td>
+        <td>
+          <a href="{% url 'update_income' income.id %}" class="btn btn-blue"
+            >Edit</a
+          >
+          <a href="{% url 'delete' income.id %}" class="btn btn-red">Delete</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4">No income records this month</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <!-- Cards for Mobile View -->
+  <div class="d-block d-lg-none">
+    <div class="row">
+      {% for income in incomes %}
+      <div class="col-12 col-md-4">
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title">{{ income.description }}</h5>
+            <p class="card-text"><strong>Date:</strong> {{ income.date }}</p>
+            <p class="card-text">
+              <strong>Amount:</strong> &#8358; {{ income.amount }}
+            </p>
+            <a href="#" class="btn btn-blue">Edit</a>
+            <a href="#" class="btn btn-red">Delete</a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="card mb-3">
+          <div class="card-body">
+            <p>No income records this month</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 </div>
-{% endblock content%}
+
+{% endblock content %}

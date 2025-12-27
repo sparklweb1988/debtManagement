@@ -36,22 +36,30 @@ class Customer(models.Model):
 
 
 
+
+
 class Debt(models.Model):
     STATUS = (
         ('owing', 'Owing'),
         ('paid', 'Paid'),
         ('part', 'Part'),
     )
-    user = models.ForeignKey(User,on_delete=models.CASCADE, null=True)
+
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)  # Using DecimalField for precision
+
+  
+    payment = models.ForeignKey('Payment', on_delete=models.CASCADE, null=True)
+
+    
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.CharField(max_length=100)
     date_collected = models.DateField(auto_now_add=True)
     status = models.CharField(max_length=100, choices=STATUS, default='owing')
 
     def __str__(self):
         return f"{self.customer} ({self.amount})"
-
 
 
 
@@ -70,10 +78,14 @@ class Payment(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE, null=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     date_paid = models.DateField(auto_now_add=True)
-    amount_paid = models.DecimalField(max_digits=10, decimal_places=2)  # Using DecimalField
+    amount_collected = models.DecimalField(max_digits=10,decimal_places=2, null=True)
+    amount_paid = models.DecimalField(max_digits=10, decimal_places=2)  
     payment_method = models.CharField(max_length=100, choices=PAYMENT)
-    balance = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # DecimalField for balance
-    status = models.CharField(max_length=100, choices=STATUS, default='owing')
+    status = models.CharField(max_length=100, choices=STATUS, default='part')
+    
+    @property
+    def balance(self):
+        return self.amount_collected - self.amount_paid
 
     def __str__(self):
         return f"{self.customer} ({self.amount_paid})"

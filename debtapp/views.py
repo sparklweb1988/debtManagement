@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import authenticate, logout, login
 from django.contrib import messages
@@ -5,6 +6,8 @@ from debtapp.models import Business, Customer, Debt, Expenditure, Income, Paymen
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db.models import Sum
+from collections import defaultdict
+
 
 # Create your views here.
 
@@ -44,44 +47,43 @@ def signin_view(request):
 #  LIST VIEW
 
 def dashboard_view(request):
-    
-    debtors = Debt.objects.all()
-    total_debtors = debtors.count()
-    incomes = Income.objects.all()
-    total_income =incomes.count() 
-    expenditures = Expenditure.objects.all()
-    total_expenditure = expenditures.count()
-    
-    
+    # Get the current date and calculate the start of the month
     today = timezone.now().date()
-
     start_of_month = today.replace(day=1)
 
+    # Calculate total debtors
+    debtors = Debt.objects.all()
+    total_debtors = debtors.count()
+
+    # Calculate total income for the current month
     total_income = Income.objects.filter(
         user=request.user,
         date__gte=start_of_month,
         date__lte=today
-    ).aggregate(total=Sum("amount"))["total"] or 0
+    ).aggregate(total=Sum("amount"))["total"] or Decimal('0.00')
 
+    # Calculate total expenditure for the current month
     total_expenditure = Expenditure.objects.filter(
         user=request.user,
         date__gte=start_of_month,
         date__lte=today
-    ).aggregate(total=Sum("amount"))["total"] or 0
+    ).aggregate(total=Sum("amount"))["total"] or Decimal('0.00')
 
+    # Calculate profit (income - expenditure)
     profit = total_income - total_expenditure
 
-    
-    
-    context ={
-        'total_debtors':total_debtors,
-        'debtors':debtors,
-        'total_income':total_income,
-        'total_expenditure':total_expenditure,
-        'profit':profit,
-        
+    # Prepare context to pass to the template
+    context = {
+        'total_debtors': total_debtors,
+        'total_income': total_income,
+        'total_expenditure': total_expenditure,
+        'profit': profit,
     }
-    return render(request, 'dashboard/dashboard.html',context)
+
+    return render(request, 'dashboard/dashboard.html', context)
+
+
+
 
 
 def bussiness_view(request):
@@ -213,6 +215,30 @@ def payment_form(request):
 
 
 
+#  MARK PAID
+
+
+def update_payment_status(request, id, status):
+    # Ensure the status is valid
+    if status not in ['paid', 'part']:
+        return redirect('payment_list')  # Invalid status, just redirect
+
+    # Get the Payment object by ID
+    payment = get_object_or_404(Payment, pk=id)
+    
+    # Update the Payment's status
+    payment.status = status
+    payment.save()
+
+    # Update the related Debt statuses to match the Payment status
+    debts = Debt.objects.filter(payment=payment)
+    debts.update(status=status)  # Update debt status to match payment status
+
+    return redirect('payment_list')
+
+
+
+
 
 
 #  UPDATE VIEW
@@ -249,48 +275,98 @@ def debt_update(request,id):
 
 
 
-# UPDATE pAYMENT
+# UPDATE PAYMENT
 
 def update_payment(request, payment_id):
-    # Get the payment object
+    if not request.user.is_authenticated:
+        return redirect('login') 
+    
     payment = get_object_or_404(Payment, id=payment_id)
-    
-    # Get the list of customers (to populate the dropdown)
     customers = Customer.objects.all()
-    
-    if request.method == 'POST':
-        # Get the submitted data
-        customer_id = request.POST.get('customer')
-        amount_paid = request.POST.get('amount_paid')
-        payment_method = request.POST.get('payment_method')
-        balance = request.POST.get('balance')
-        status = request.POST.get('status')
 
-        # Get the customer object from the selected ID
-        customer = get_object_or_404(Customer, id=customer_id)
+    if request.method == 'POST':
+        amount_paid = Decimal(request.POST.get('amount_paid'))
+        amount_collected = Decimal(request.POST.get('balance'))  # Assuming you want to update the amount collected
+        payment_method = request.POST.get('payment_method')
+        status = request.POST.get('status')
+        customer_id = request.POST.get('customer')
         
+        # Get the customer object based on the provided customer_id
+        customer = Customer.objects.get(id=customer_id)
+
         # Update the payment object
-        payment.customer = customer
+        payment.amount_collected = amount_collected
         payment.amount_paid = amount_paid
         payment.payment_method = payment_method
-        payment.balance = balance
         payment.status = status
-
-        # Save the updated payment
-        payment.save()
+        payment.customer = customer
         
-        # Redirect to the payment list page
+        # Save the changes
+        payment.save()
+
+        # Redirect to payment list
         return redirect('payment_list')
-    
-    # If it's a GET request, render the form with the current payment data
+
     return render(request, 'forms/payment_update.html', {
         'payment': payment,
         'customers': customers
     })
 
+#  UPDATE INCOME
+
+def update_income(request, id):
+    # Get the income object based on income_id
+    income = get_object_or_404(Income, pk=id)
+    
+    if request.method == 'POST':
+        # Get the updated amount and description from the form
+        amount = Decimal(request.POST.get('amount'))
+        description = request.POST.get('description')
+
+        # Update the income fields
+        income.amount = amount
+        income.description = description
+        
+        # Save the updated income object
+        income.save()
+        
+        # Redirect to the income list page after saving
+        return redirect('income')
+
+    # If it's a GET request, pre-populate the form with the existing data
+    return render(request, 'forms/update_income.html', {
+        'income': income
+    })
 
 
 
+#  UPDATE EXPENDITURE
+
+def update_expenditure(request, id):
+    # Get the expenditure object by ID
+    expenditure = get_object_or_404(Expenditure, pk=id)
+    
+    if request.method == 'POST':
+        # Get the updated amount and description from the form
+        amount = Decimal(request.POST.get('amount'))
+        description = request.POST.get('description')
+
+        # Update the expenditure fields
+        expenditure.amount = amount
+        expenditure.description = description
+        
+        # Save the updated expenditure object
+        expenditure.save()
+
+        # Redirect to the expenditure list after saving
+        return redirect('expenditure')
+
+    # If it's a GET request, pre-populate the form with the current data
+    return render(request, 'forms/update_expenditure.html', {
+        'expenditure': expenditure
+    })
+    
+    
 
 #  DELETE VIEW
 
@@ -309,7 +385,18 @@ def payment_delete(request, id):
     payment = get_object_or_404(Payment, pk=id)
     payment.delete()
     return redirect('payment_list')
-#  LOGOUT VIEW
+
+
+def delete_view(request, id):
+    incomes = get_object_or_404(Income, pk=id)
+    incomes.delete()
+    return redirect('income')
+
+
+def expenditure_delete_view(request, id):
+    expense = get_object_or_404(Expenditure, pk=id)
+    expense.delete()
+    return redirect('expenditure')
 
 
 

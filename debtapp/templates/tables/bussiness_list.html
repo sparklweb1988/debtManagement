@@ -1,31 +1,54 @@
 {% extends 'base.html'%} {% block content%}
 <div class="container">
-  <h1>Welcome: {{user.username}}</h1>
   <h1>Business List</h1>
 
-  <table class="table table-bordered">
-    <thead>
-      <tr>
-        <th>Owner</th>
-        <th>Business Name</th>
-        <th>Address</th>
-        <th>Phone</th>
-        <th>Date Created</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for b in buss %}
-      <tr>
-        <td>{{ b.owner.username }}</td>
-        <!-- Owner username -->
-        <td>{{ b.name }}</td>
-        <td>{{ b.address }}</td>
-        <td>{{ b.phone }}</td>
-        <td>{{ b.date_created }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
+  <!-- Table for Desktop View -->
+  <div class="d-none d-lg-block">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Owner</th>
+          <th>Business Name</th>
+          <th>Address</th>
+          <th>Phone</th>
+          <th>Date Created</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in buss %}
+        <tr>
+          <td>{{ b.owner.username }}</td>
+          <td>{{ b.name }}</td>
+          <td>{{ b.address }}</td>
+          <td>{{ b.phone }}</td>
+          <td>{{ b.date_created }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
-{% endblock content%}
+  <!-- Cards for Mobile View -->
+  <div class="d-block d-lg-none">
+    <div class="row">
+      {% for b in buss %}
+      <div class="col-12 col-md-4">
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title">{{ b.name }}</h5>
+            <p class="card-text">
+              <strong>Owner:</strong> {{ b.owner.username }}
+            </p>
+            <p class="card-text"><strong>Address:</strong> {{ b.address }}</p>
+            <p class="card-text"><strong>Phone:</strong> {{ b.phone }}</p>
+            <p class="card-text">
+              <strong>Date Created:</strong> {{ b.date_created }}
+            </p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock content %}

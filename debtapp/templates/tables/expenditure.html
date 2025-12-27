@@ -1,8 +1,11 @@
 {% extends 'base.html'%} {% block content%}
 
 <div class="container">
-  <p><strong>Total Expenditure:</strong> &#8358; {{ total_expenditure }}</p>
+  <p class="str">
+    <strong>Total Expenditure:</strong> &#8358; {{ total_expenditure }}
+  </p>
 
+  <!-- Form to Add Expenditure -->
   <form method="post">
     <h2>Add Expenditure</h2>
     {% csrf_token %}
@@ -19,30 +22,72 @@
     <br /><br />
     <button type="submit">Add Expenditure</button>
   </form>
+
   <h1>Expenditure List</h1>
-  <table class="table table-bordered">
-    <tr>
-      <th>Date</th>
-      <th>Description</th>
-      <th>Amount</th>
-      <th>Actions</th>
-    </tr>
-    {% for expense in expenditures %}
-    <tr>
-      <td>{{ expense.date }}</td>
-      <td>{{ expense.description }}</td>
-      <td>&#8358; {{ expense.amount }}</td>
-      <td>
-        <!-- Button Links with different styles -->
-        <a href="" class="btn btn-blue">Edit</a>
-        <a href="" class="btn btn-red">Delete</a>
-      </td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="3">No expenditure records this month</td>
-    </tr>
-    {% endfor %}
-  </table>
+
+  <!-- Table for Desktop View -->
+  <div class="d-none d-lg-block">
+    <table class="table table-bordered">
+      <tr>
+        <th>Date</th>
+        <th>Description</th>
+        <th>Amount</th>
+        <th>Actions</th>
+      </tr>
+      {% for expense in expenditures %}
+      <tr>
+        <td>{{ expense.date }}</td>
+        <td>{{ expense.description }}</td>
+        <td>&#8358; {{ expense.amount }}</td>
+        <td>
+          <a
+            href="{% url 'update_expenditure' expense.id %}"
+            class="btn btn-blue"
+            >Edit</a
+          >
+          <a
+            href="{% url 'delete_expenditure' expense.id %}"
+            class="btn btn-red"
+            >Delete</a
+          >
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4">No expenditure records this month</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <!-- Cards for Mobile View -->
+  <div class="d-block d-lg-none">
+    <div class="row">
+      {% for expense in expenditures %}
+      <div class="col-12 col-md-4">
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title">{{ expense.description }}</h5>
+            <p class="card-text"><strong>Date:</strong> {{ expense.date }}</p>
+            <p class="card-text">
+              <strong>Amount:</strong> &#8358; {{ expense.amount }}
+            </p>
+            <a href="#" class="btn btn-blue">Edit</a>
+            <a href="#" class="btn btn-red">Delete</a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="card mb-3">
+          <div class="card-body">
+            <p>No expenditure records this month</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 </div>
-{% endblock content%}
+
+{% endblock content %}
